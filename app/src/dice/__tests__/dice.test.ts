@@ -87,7 +87,7 @@ describe('Die', () => {
     let subject = new Die(d4)
 
     for (let i = 0; i < 1000; i++) {
-      const result = subject.roll()
+      const result = subject.reroll()
 
       expect(result).toBeGreaterThan(0)
       expect(result).toBeLessThanOrEqual(4)
@@ -96,7 +96,7 @@ describe('Die', () => {
     subject = new Die(d2)
 
     for (let i = 0; i < 1000; i++) {
-      const result = subject.roll()
+      const result = subject.reroll()
 
       expect(result).toBeGreaterThan(0)
       expect(result).toBeLessThanOrEqual(2)

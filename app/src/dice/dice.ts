@@ -1,7 +1,8 @@
-import { DiceFunction, DiceTable } from './types'
+import { Summable } from '../summable'
+import { RollFunction } from './types'
 import { roller } from './roller'
 
-const dice: DiceTable = {
+const dice = {
   d2: roller(2),
   d4: roller(4),
   d6: roller(6),
@@ -14,14 +15,22 @@ const dice: DiceTable = {
 
 export const { d2, d4, d6, d8, d10, d12, d20, d100 } = dice
 
-export default class Die {
-  private roller: DiceFunction
+export default class Die implements Summable {
+  private roller: RollFunction
+  private result: number
 
-  constructor(roller: DiceFunction) {
+  constructor(roller: RollFunction) {
     this.roller = roller
+    this.result = this.reroll()
   }
 
-  roll(): number {
-    return this.roller()
+  value(): number {
+    return this.result
+  }
+
+  reroll(): number {
+    this.result = this.roller()
+
+    return this.result
   }
 }

@@ -1,7 +1,7 @@
 import { random } from '../random'
-import { DiceFunction } from './types'
+import { RollFunction } from './types'
 
-const roller = (ceiling: number): DiceFunction => {
+const roller = (ceiling: number): RollFunction => {
   return (): number => {
     const seed = random()
 
