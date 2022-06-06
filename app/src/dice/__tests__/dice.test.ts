@@ -1,4 +1,4 @@
-import { d2, d4, d6, d8, d10, d12, d20, d100 } from '../dice'
+import Die, { d2, d4, d6, d8, d10, d12, d20, d100 } from '../dice'
 
 describe('dice', () => {
   describe('d2', () => {
@@ -79,5 +79,27 @@ describe('dice', () => {
         expect(result).toBeLessThanOrEqual(100)
       }
     })
+  })
+})
+
+describe('Die', () => {
+  it('wraps a DiceFunction', () => {
+    let subject = new Die(d4)
+
+    for (let i = 0; i < 1000; i++) {
+      const result = subject.roll()
+
+      expect(result).toBeGreaterThan(0)
+      expect(result).toBeLessThanOrEqual(4)
+    }
+
+    subject = new Die(d2)
+
+    for (let i = 0; i < 1000; i++) {
+      const result = subject.roll()
+
+      expect(result).toBeGreaterThan(0)
+      expect(result).toBeLessThanOrEqual(2)
+    }
   })
 })
