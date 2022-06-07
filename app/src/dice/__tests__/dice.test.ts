@@ -94,22 +94,57 @@ describe('dice', () => {
 
 describe('Die', () => {
   it('wraps a DiceFunction', () => {
-    let subject = new Die(d4)
+    const fudgedRoll = 4
+    const mockDiceFunction = jest.fn().mockReturnValue(fudgedRoll)
 
-    for (let i = 0; i < 1000; i++) {
-      const result = subject.reroll()
+    new Die(mockDiceFunction)
 
-      expect(result).toBeGreaterThan(0)
-      expect(result).toBeLessThanOrEqual(4)
-    }
+    expect(mockDiceFunction).toHaveBeenCalledTimes(1)
+  })
 
-    subject = new Die(d2)
+  it('calls the DiceFunction once per number of dice', () => {
+    const fudgedRoll = 4
+    const mockDiceFunction = jest.fn().mockReturnValue(fudgedRoll)
+    const numDice = 10
 
-    for (let i = 0; i < 1000; i++) {
-      const result = subject.reroll()
+    new Die(mockDiceFunction, numDice)
 
-      expect(result).toBeGreaterThan(0)
-      expect(result).toBeLessThanOrEqual(2)
-    }
+    expect(mockDiceFunction).toHaveBeenCalledTimes(numDice)
+  })
+
+  describe('value', () => {
+    it('returns the sum of all dice by default', () => {
+      const fudgedRoll = 4
+      const mockDiceFunction = jest.fn().mockReturnValue(fudgedRoll)
+      const numDice = 10
+
+      const subject = new Die(mockDiceFunction, numDice)
+
+      expect(subject.value()).toEqual(fudgedRoll * numDice)
+    })
+
+    it('returns the sum of the highest (n - dl) dice if dl is passed', () => {
+      const minRoll = 1
+      const fudgedRoll = 4
+      const mockDiceFunction = jest.fn().mockReturnValueOnce(minRoll).mockReturnValue(fudgedRoll)
+      const numDice = 10
+      const numDropped = 1
+
+      const subject = new Die(mockDiceFunction, numDice, { dl: numDropped })
+
+      expect(subject.value()).toEqual(fudgedRoll * (numDice - numDropped))
+    })
+
+    it('returns the sum of the lowest (n - dh) dice if dh is passed', () => {
+      const maxRoll = 4
+      const fudgedRoll = 1
+      const mockDiceFunction = jest.fn().mockReturnValueOnce(maxRoll).mockReturnValue(fudgedRoll)
+      const numDice = 10
+      const numDropped = 1
+
+      const subject = new Die(mockDiceFunction, numDice, { dh: numDropped })
+
+      expect(subject.value()).toEqual(fudgedRoll * (numDice - numDropped))
+    })
   })
 })
