@@ -1,4 +1,4 @@
-import { StraightValue } from "../modifiers";
+import { Modifier, StraightValue } from "../modifiers";
 import { Summable } from "../summable";
 import Die, * as dice from "../dice";
 
@@ -13,53 +13,61 @@ const parse = (input: string): Summable[] => {
   const summables: Summable[] = [];
 
   const diceInputs: string[] = [];
-  const straightValueInputs: number[] = [];
+  const modifierInputs: number[] = [];
 
   input
     .split("+")
     .map((s) => s.trim())
-    .map((s) => {
-      const parsedNumber = parseInt(s, 10);
-
-      if (Number.isNaN(parsedNumber) || s !== parsedNumber.toString()) {
-        diceInputs.push(s);
-      } else {
-        straightValueInputs.push(parsedNumber);
-      }
-    });
+    .map((s) => partition(s, diceInputs, modifierInputs));
 
   diceInputs
-    .filter((s) => {
-      const passes = DICE_SHORTHAND_REGEX.test(s);
-
-      return passes;
-    })
-    .map((s) => {
-      const split = s.split("d");
-      const tuple: [number, string] = [parseInt(split[0]) || 1, `d${split[1]}`];
-
-      return tuple;
-    })
-    .filter(([_, s]) => Object.keys(dice.Dice).includes(s))
-    .map(([n, s]) => {
-      const collected: Die[] = [];
-      const idx: dice.Dice = s as dice.Dice;
-      const roller: dice.RollFunction = dice[idx];
-
-      for (let i = 0; i < n; i++) {
-        collected.push(new Die(roller));
-      }
-
-      return collected;
-    })
+    .filter(isDiceNotation)
+    .map(splitDiceNotation)
+    .filter(isValidDie)
+    .map(parseDice)
     .flat()
-    .map((d) => summables.push(d));
+    .forEach((d) => summables.push(d));
 
-  straightValueInputs
-    .map((n) => new StraightValue(n))
+  modifierInputs
+    .map(parseModifier)
     .forEach((sv) => summables.push(sv));
 
   return summables;
 };
+
+const partition = (s: string, dice: string[], modifiers: number[]): void => {
+  const parsedNumber = parseInt(s, 10);
+
+  if (Number.isNaN(parsedNumber) || s !== parsedNumber.toString()) {
+    dice.push(s);
+  } else {
+    modifiers.push(parsedNumber);
+  }
+}
+
+const isDiceNotation = (s: string): boolean => (DICE_SHORTHAND_REGEX.test(s))
+
+const splitDiceNotation = (s: string): [number, string] => {
+  const split = s.split("d");
+  const tuple: [number, string] = [parseInt(split[0]) || 1, `d${split[1]}`];
+
+  return tuple;
+}
+
+const isValidDie = ([_, s]: [number, string]): boolean => (dice.isValidDieIndex(s))
+
+const parseDice = ([n, s]: [number, string]): Die[] => {
+  const collected: Die[] = [];
+  const idx: dice.Dice = s as dice.Dice;
+  const roller: dice.RollFunction = dice[idx];
+
+  for (let i = 0; i < n; i++) {
+    collected.push(new Die(roller));
+  }
+
+  return collected;
+}
+
+const parseModifier = (n: number): Modifier => (new StraightValue(n))
 
 export { parse };

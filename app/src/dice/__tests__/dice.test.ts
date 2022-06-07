@@ -1,4 +1,4 @@
-import Die, { d2, d4, d6, d8, d10, d12, d20, d100 } from '../dice'
+import Die, { d2, d4, d6, d8, d10, d12, d20, d100, isValidDieIndex } from '../dice'
 
 describe('dice', () => {
   describe('d2', () => {
@@ -78,6 +78,16 @@ describe('dice', () => {
         expect(result).toBeGreaterThan(0)
         expect(result).toBeLessThanOrEqual(100)
       }
+    })
+  })
+
+  describe('isValidDieIndex', () => {
+    it('returns true for a valid die type', () => {
+      expect(isValidDieIndex('d6')).toBeTruthy()
+    })
+
+    it('returns false for an invalid die type', () => {
+      expect(isValidDieIndex('d5')).toBeFalsy()
     })
   })
 })

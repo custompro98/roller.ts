@@ -15,6 +15,8 @@ const dice = {
 
 export const { d2, d4, d6, d8, d10, d12, d20, d100 } = dice
 
+export const isValidDieIndex = (s: string): boolean => (Object.keys(dice).includes(s))
+
 export default class Die implements Summable {
   private roller: RollFunction
   private result: number
