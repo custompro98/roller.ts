@@ -1,104 +1,97 @@
-import { parse } from '../parser'
+import { parse } from "../parser";
+import * as dice from "../../dice";
 
-describe('parse', () => {
-  it('returns an empty array for no input', () => {
-    const input = ''
-    const result = parse(input)
+describe("parse", () => {
+  beforeEach(() => {
+    jest.spyOn(dice, "d2").mockReturnValue(2);
+    jest.spyOn(dice, "d4").mockReturnValue(4);
+    jest.spyOn(dice, "d6").mockReturnValue(6);
+    jest.spyOn(dice, "d8").mockReturnValue(8);
+    jest.spyOn(dice, "d10").mockReturnValue(10);
+    jest.spyOn(dice, "d12").mockReturnValue(12);
+    jest.spyOn(dice, "d20").mockReturnValue(20);
+    jest.spyOn(dice, "d100").mockReturnValue(100);
+  });
 
-    expect(result.length).toEqual(0)
-  })
+  it("returns an empty array for no input", () => {
+    const input = "";
+    const result = parse(input);
 
-  it('can parse a straight value', () => {
-    const input = '5'
-    const result = parse(input)
+    expect(result.length).toEqual(0);
+  });
 
-    expect(result.length).toEqual(1)
-    expect(result[0].value()).toEqual(5)
-  })
+  it("can parse a straight value", () => {
+    const input = "5";
+    const result = parse(input);
 
-  it('can parse two straight values', () => {
-    const input = '5+3'
-    const result = parse(input)
+    expect(result.length).toEqual(1);
+    expect(result[0].value()).toEqual(5);
+  });
 
-    expect(result.length).toEqual(2)
-    expect(result[0].value()).toEqual(5)
-    expect(result[1].value()).toEqual(3)
-  })
+  it("can parse two straight values", () => {
+    const input = "5+3";
+    const result = parse(input);
 
-  it('ignores bad straight value inputs', () => {
-    const input = 'hello'
-    const result = parse(input)
+    expect(result.length).toEqual(2);
+    expect(result[0].value()).toEqual(5);
+    expect(result[1].value()).toEqual(3);
+  });
 
-    expect(result.length).toEqual(0)
-  })
+  it("ignores bad straight value inputs", () => {
+    const input = "hello";
+    const result = parse(input);
 
-  it('can parse a die', () => {
-    for (let i = 0; i < 1000; i++) {
-      const input = 'd6'
-      const result = parse(input)
+    expect(result.length).toEqual(0);
+  });
 
-      expect(result.length).toEqual(1)
-      expect(result[0].value()).toBeGreaterThanOrEqual(1)
-      expect(result[0].value()).toBeLessThanOrEqual(6)
-    }
-  })
+  it("can parse a die", () => {
+    const input = "d6";
+    const result = parse(input);
 
-  it('can parse two dice', () => {
-    for (let i = 0; i < 1000; i++) {
-      const input = 'd6 + d4'
-      const result = parse(input)
+    expect(result.length).toEqual(1);
+    expect(result[0].value()).toEqual(6);
+  });
 
-      expect(result.length).toEqual(2)
-      expect(result[0].value()).toBeGreaterThanOrEqual(1)
-      expect(result[0].value()).toBeLessThanOrEqual(6)
+  it("can parse two dice", () => {
+    const input = "d6 + d4";
+    const result = parse(input);
 
-      expect(result[1].value()).toBeGreaterThanOrEqual(1)
-      expect(result[1].value()).toBeLessThanOrEqual(4)
-    }
-  })
+    expect(result.length).toEqual(2);
+    expect(result[0].value()).toEqual(6);
+    expect(result[1].value()).toEqual(4);
+  });
 
-  it('can parse two dice shorthand', () => {
-    for (let i = 0; i < 1000; i++) {
-      const input = '2d6'
-      const result = parse(input)
+  it("can parse two dice shorthand", () => {
+    const input = "2d6";
+    const result = parse(input);
 
-      expect(result.length).toEqual(2)
-      expect(result[0].value()).toBeGreaterThanOrEqual(1)
-      expect(result[0].value()).toBeLessThanOrEqual(6)
+    expect(result.length).toEqual(2);
+    expect(result[0].value()).toEqual(6);
+    expect(result[1].value()).toEqual(6);
+  });
 
-      expect(result[1].value()).toBeGreaterThanOrEqual(1)
-      expect(result[1].value()).toBeLessThanOrEqual(6)
-    }
-  })
+  it("can parse one die shorthand", () => {
+    const input = "1d6";
+    const result = parse(input);
 
-  it('can parse one die shorthand', () => {
-    for (let i = 0; i < 1000; i++) {
-      const input = '1d6'
-      const result = parse(input)
+    expect(result.length).toEqual(1);
+    expect(result[0].value()).toEqual(6);
+  });
 
-      expect(result.length).toEqual(1)
-      expect(result[0].value()).toBeGreaterThanOrEqual(1)
-      expect(result[0].value()).toBeLessThanOrEqual(6)
-    }
-  })
+  it("can parse dice and straight values", () => {
+    const input = "1d6 + 56";
+    const result = parse(input);
 
-  it('can parse dice and straight values', () => {
-    for (let i = 0; i < 1000; i++) {
-      const input = '1d6 + 56'
-      const result = parse(input)
+    expect(result.length).toEqual(2);
+    expect(result[0].value()).toEqual(6);
 
-      expect(result.length).toEqual(2)
-      expect(result[0].value()).toBeGreaterThanOrEqual(1)
-      expect(result[0].value()).toBeLessThanOrEqual(6)
+    expect(result[1].value()).toEqual(56);
+  });
 
-      expect(result[1].value()).toEqual(56)
-    }
-  })
+  it("ignores bad dice inputs", () => {
+    const input = "nd6";
+    const result = parse(input);
 
-  it('ignores bad dice inputs', () => {
-    const input = 'nd6'
-    const result = parse(input)
-
-    expect(result.length).toEqual(0)
-  })
-})
+    expect(result.length).toEqual(0);
+  });
+});
