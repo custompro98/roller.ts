@@ -1,7 +1,9 @@
 {
-  "name": "typescript-sample",
-  "version": "1.0.0",
-  "description": "A repo serving as a typescript template",
+  "name": "roller.ts",
+  "version": "1.0.1",
+  "description": "A dice roller written in Typescript, meant to be used as a library",
+  "homepage": "https://github.com/custompro98/roller.ts",
+  "repository": "github:custompro98/roller.ts",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -13,6 +15,10 @@
     "test:interactive": "jest --watchAll"
   },
   "author": "custompro98",
+  "files": [
+    "../README.md",
+    "dist/"
+  ],
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^26.0.15",
