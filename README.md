@@ -14,8 +14,8 @@ A node package to simulate Dice Rolls, currently supports the common dice:
 
 ### Dice Roll Format
 
-A Dice Roll looks very similar to Roll20's `/roll` command.  
-i.e. `2d20 + d6 + 2d4 + 5 + 2` (with or without spaces) is valid.
+A Dice Roll looks very similar to [Roll20](https://wiki.roll20.net/Dice_Reference)'s `/roll` command.  
+i.e. `2d20dh1 + d6! + 2d4 + 5 + 2` (with or without spaces) is valid.
 
 ### Representation
 

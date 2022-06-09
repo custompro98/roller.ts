@@ -1,6 +1,6 @@
 {
   "name": "roller.ts",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A dice roller written in Typescript, meant to be used as a library",
   "homepage": "https://github.com/custompro98/roller.ts",
   "repository": "github:custompro98/roller.ts",
