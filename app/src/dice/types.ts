@@ -14,5 +14,16 @@ export enum Dice {
 export type DieConfig = {
   dh?: number;
   dl?: number;
-  ace?: number;
+  ace?: AceConfig;
 };
+
+export type AceConfig = {
+  target: number;
+  operator: AceOperator;
+};
+
+export enum AceOperator {
+  eq = "=",
+  ge = ">",
+  le = "<",
+}

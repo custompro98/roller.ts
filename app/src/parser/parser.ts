@@ -2,6 +2,7 @@ import { DiceNotation } from "./types";
 import { Modifier, StraightValue } from "../modifiers";
 import { Summable } from "../summable";
 import Die, * as dice from "../dice";
+import { AceOperator } from "../dice/types";
 
 /*
  * This will match the pattern START, 0 or more numbers, the letter d, and 0 or more numbers, END
@@ -76,7 +77,7 @@ const parseDice = (dn: DiceNotation): Die => {
   const roller: dice.RollFunction = dice[idx];
 
   return new Die(roller, dn.nDice, {
-    ace: dn.ace,
+    ace: { target: dn.ace, operator: AceOperator.eq },
     dh: dn.dropHighest,
     dl: dn.dropLowest,
   });

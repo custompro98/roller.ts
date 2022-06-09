@@ -9,6 +9,7 @@ import Die, {
   d100,
   isValidDieIndex,
 } from "../dice";
+import { AceOperator } from "../types";
 
 describe("dice", () => {
   describe("d2", () => {
@@ -172,7 +173,12 @@ describe("Die", () => {
         .mockReturnValueOnce(fudgedRoll);
       const numDice = 1;
 
-      const subject = new Die(mockDiceFunction, numDice, { ace: maxRoll });
+      const subject = new Die(mockDiceFunction, numDice, {
+        ace: {
+          target: maxRoll,
+          operator: AceOperator.eq,
+        },
+      });
 
       expect(subject.value()).toEqual(maxRoll + fudgedRoll);
     });

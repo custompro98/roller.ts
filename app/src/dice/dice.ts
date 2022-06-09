@@ -1,5 +1,5 @@
 import { Summable } from "../summable";
-import { DieConfig, RollFunction } from "./types";
+import { AceConfig, AceOperator, DieConfig, RollFunction } from "./types";
 import { roller } from "./roller";
 
 const dice = {
@@ -25,7 +25,7 @@ export default class Die implements Summable {
   private _nDice: number;
   private _dropHighest: number;
   private _dropLowest: number;
-  private _explodesOn: number;
+  private _explodesOn: AceConfig;
 
   private _results: number[];
 
@@ -35,14 +35,14 @@ export default class Die implements Summable {
     { dh, dl, ace }: DieConfig = {
       dh: 0,
       dl: 0,
-      ace: 0,
+      ace: { target: 0, operator: AceOperator.eq },
     }
   ) {
     this._roll = roller;
     this._nDice = nDice;
     this._dropHighest = dh || this.DEFAULT_DROPPED;
     this._dropLowest = dl || this.DEFAULT_DROPPED;
-    this._explodesOn = ace || 0;
+    this._explodesOn = ace || { target: 0, operator: AceOperator.eq };
 
     this._results = [];
     this.roll();
@@ -74,9 +74,26 @@ export default class Die implements Summable {
       do {
         val = this._roll();
         this._results.push(val);
-      } while (val === this._explodesOn);
+      } while (this.didExplode(val));
     }
 
     this._results.sort();
+  }
+
+  private didExplode(n: number): boolean {
+    switch (this._explodesOn.operator) {
+      case AceOperator.eq: {
+        return n === this._explodesOn.target;
+      }
+      case AceOperator.ge: {
+        return n >= this._explodesOn.target;
+      }
+      case AceOperator.le: {
+        return n <= this._explodesOn.target;
+      }
+      default: {
+        return false;
+      }
+    }
   }
 }
