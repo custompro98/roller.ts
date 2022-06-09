@@ -8,8 +8,7 @@ import Die, * as dice from "../dice";
  * i.e. example matches include
  * d6 2d6 d4 10d4 1000d20 1d12
  * */
-// TODO: parse a symbol for exploding dice
-const DICE_SHORTHAND_REGEX = new RegExp("^(\\d*)(d\\d+)(d(h|l)\\d+)?$");
+const DICE_SHORTHAND_REGEX = new RegExp("^(\\d*)(d\\d+)(!)?(d(h|l)\\d+)?$");
 
 const parse = (input: string): Summable[] => {
   return input
@@ -41,7 +40,7 @@ const parseSummable = (s: string): Summable => {
 };
 
 const splitDiceNotation = (s: string): DiceNotation => {
-  const [input, nDice, dieFaces, toDrop] = DICE_SHORTHAND_REGEX.exec(
+  const [input, nDice, dieFaces, ace, toDrop] = DICE_SHORTHAND_REGEX.exec(
     s
   ) as string[];
 
@@ -54,10 +53,13 @@ const splitDiceNotation = (s: string): DiceNotation => {
     dropLowest = toNumber(toDrop.slice(2, toDrop.length));
   }
 
+  const explodesOn = ace ? toNumber(dieFaces.slice(1, dieFaces.length)) : 0;
+
   const spn = {
     input,
     nDice: toNumber(nDice) || 1,
     dieFaces: dieFaces,
+    ace: explodesOn,
     dropHighest,
     dropLowest,
   } as DiceNotation;
@@ -74,6 +76,7 @@ const parseDice = (dn: DiceNotation): Die => {
   const roller: dice.RollFunction = dice[idx];
 
   return new Die(roller, dn.nDice, {
+    ace: dn.ace,
     dh: dn.dropHighest,
     dl: dn.dropLowest,
   });

@@ -121,6 +121,16 @@ describe("parse", () => {
     expect(result[1].value()).toEqual(6);
   });
 
+  it("can parse when a dice should ace", () => {
+    jest.spyOn(dice, "d6").mockReturnValueOnce(6).mockReturnValueOnce(3);
+
+    const input = "1d6!";
+    const result = parse(input);
+
+    expect(result.length).toEqual(1);
+    expect(result[0].value()).toEqual(9);
+  });
+
   it("ignores bad dice inputs", () => {
     const input = "nd6";
     const result = parse(input);
