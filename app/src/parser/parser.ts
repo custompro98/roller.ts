@@ -11,57 +11,51 @@ import Die, * as dice from "../dice";
 const DICE_SHORTHAND_REGEX = new RegExp("^(\\d*)(d\\d+)(d(h|l)\\d+)?$");
 
 const parse = (input: string): Summable[] => {
-  const summables: Summable[] = [];
-
-  const diceInputs: string[] = [];
-  const modifierInputs: number[] = [];
-
-  input
+  return input
     .split("+")
     .map((s) => s.trim())
-    .map((s) => partition(s, diceInputs, modifierInputs));
-
-  diceInputs
-    .filter(isDiceNotation)
-    .map(splitDiceNotation)
-    .filter(isValidDie)
-    .map(parseDice)
-    .flat()
-    .forEach((d) => summables.push(d));
-
-  modifierInputs.map(parseModifier).forEach((sv) => summables.push(sv));
-
-  return summables;
+    .filter((s) => isStraightValue(s) || isDiceNotation(s))
+    .map((s) => parseSummable(s));
 };
 
-const partition = (s: string, dice: string[], modifiers: number[]): void => {
-  const parsedNumber = parseInt(s, 10);
+const isStraightValue = (s: string): boolean => {
+  const parsedNumber = toNumber(s);
 
-  if (Number.isNaN(parsedNumber) || s !== parsedNumber.toString()) {
-    dice.push(s);
-  } else {
-    modifiers.push(parsedNumber);
-  }
+  return !Number.isNaN(parsedNumber) && s === parsedNumber.toString();
 };
 
 const isDiceNotation = (s: string): boolean => DICE_SHORTHAND_REGEX.test(s);
+
+const parseSummable = (s: string): Summable => {
+  if (isDiceNotation(s)) {
+    const diceDescriptor = splitDiceNotation(s);
+    if (isValidDie(diceDescriptor)) {
+      return parseDice(diceDescriptor);
+    }
+  } else if (isStraightValue(s)) {
+    return parseModifier(toNumber(s));
+  }
+
+  return parseModifier(0);
+};
 
 const splitDiceNotation = (s: string): DiceNotation => {
   const [input, nDice, dieFaces, toDrop] = DICE_SHORTHAND_REGEX.exec(
     s
   ) as string[];
+
   let dropHighest = 0;
   let dropLowest = 0;
 
   if (toDrop && toDrop[1] === "h") {
-    dropHighest = parseInt(toDrop.slice(2, toDrop.length));
+    dropHighest = toNumber(toDrop.slice(2, toDrop.length));
   } else if (toDrop && toDrop[1] === "l") {
-    dropLowest = parseInt(toDrop.slice(2, toDrop.length));
+    dropLowest = toNumber(toDrop.slice(2, toDrop.length));
   }
 
   const spn = {
     input,
-    nDice: parseInt(nDice) || 1,
+    nDice: toNumber(nDice) || 1,
     dieFaces: dieFaces,
     dropHighest,
     dropLowest,
@@ -70,20 +64,22 @@ const splitDiceNotation = (s: string): DiceNotation => {
   return spn;
 };
 
-const isValidDie = (spn: DiceNotation): boolean => {
-  return dice.isValidDieIndex(spn.dieFaces);
+const isValidDie = (dn: DiceNotation): boolean => {
+  return dice.isValidDieIndex(dn.dieFaces);
 };
 
-const parseDice = (spn: DiceNotation): Die => {
-  const idx: dice.Dice = spn.dieFaces as dice.Dice;
+const parseDice = (dn: DiceNotation): Die => {
+  const idx: dice.Dice = dn.dieFaces as dice.Dice;
   const roller: dice.RollFunction = dice[idx];
 
-  return new Die(roller, spn.nDice, {
-    dh: spn.dropHighest,
-    dl: spn.dropLowest,
+  return new Die(roller, dn.nDice, {
+    dh: dn.dropHighest,
+    dl: dn.dropLowest,
   });
 };
 
 const parseModifier = (n: number): Modifier => new StraightValue(n);
+
+const toNumber = (s: string): number => parseInt(s, 10);
 
 export { parse };

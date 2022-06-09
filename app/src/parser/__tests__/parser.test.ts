@@ -75,7 +75,7 @@ describe("parse", () => {
 
     expect(result.length).toEqual(1);
     expect(result[0].value()).toEqual(6);
-  })
+  });
 
   it("groups two dice shorthand with drop lowest > 1 digits", () => {
     const input = "20d6dl19";
@@ -83,7 +83,7 @@ describe("parse", () => {
 
     expect(result.length).toEqual(1);
     expect(result[0].value()).toEqual(6);
-  })
+  });
 
   it("groups two dice shorthand with drop highest", () => {
     const input = "2d6dh1";
@@ -91,7 +91,7 @@ describe("parse", () => {
 
     expect(result.length).toEqual(1);
     expect(result[0].value()).toEqual(6);
-  })
+  });
 
   it("can parse one die shorthand", () => {
     const input = "1d6";
@@ -109,6 +109,16 @@ describe("parse", () => {
     expect(result[0].value()).toEqual(6);
 
     expect(result[1].value()).toEqual(56);
+  });
+
+  it("can parse dice and straight values and leaves them in inputted order", () => {
+    const input = "56 + 1d6";
+    const result = parse(input);
+
+    expect(result.length).toEqual(2);
+    expect(result[0].value()).toEqual(56);
+
+    expect(result[1].value()).toEqual(6);
   });
 
   it("ignores bad dice inputs", () => {
