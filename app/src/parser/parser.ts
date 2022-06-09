@@ -8,6 +8,7 @@ import Die, * as dice from "../dice";
  * i.e. example matches include
  * d6 2d6 d4 10d4 1000d20 1d12
  * */
+// TODO: parse a symbol for exploding dice
 const DICE_SHORTHAND_REGEX = new RegExp("^(\\d*)(d\\d+)(d(h|l)\\d+)?$");
 
 const parse = (input: string): Summable[] => {
