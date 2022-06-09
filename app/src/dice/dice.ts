@@ -1,5 +1,5 @@
 import { Summable } from "../summable";
-import { RollFunction } from "./types";
+import { DieConfig, RollFunction } from "./types";
 import { roller } from "./roller";
 
 const dice = {
@@ -25,44 +25,58 @@ export default class Die implements Summable {
   private _nDice: number;
   private _dropHighest: number;
   private _dropLowest: number;
+  private _explodesOn: number;
 
-  private results: number[];
+  private _results: number[];
 
   constructor(
     roller: RollFunction,
     nDice: number = 1,
-    { dh, dl }: { dh?: number; dl?: number } = { dh: 0, dl: 0 }
+    { dh, dl, ace }: DieConfig = {
+      dh: 0,
+      dl: 0,
+      ace: 0,
+    }
   ) {
     this._roll = roller;
     this._nDice = nDice;
     this._dropHighest = dh || this.DEFAULT_DROPPED;
     this._dropLowest = dl || this.DEFAULT_DROPPED;
+    this._explodesOn = ace || 0;
 
-    this.results = [];
-    this.reroll();
+    this._results = [];
+    this.roll();
   }
 
   value(): number {
-    let list = this.results;
+    let list = this._results;
     let numDropped = 0;
 
     if (this._dropLowest > 0) {
-      list = list.reverse();
       numDropped = this._dropLowest;
+      list = list.reverse().slice(0, this._nDice - numDropped);
     } else if (this._dropHighest > 0) {
       numDropped = this._dropHighest;
+      list = list.slice(0, this._nDice - numDropped);
     }
 
-    return list
-      .slice(0, this._nDice - numDropped)
-      .reduce((acc, cur) => acc + cur, 0);
+    return list.reduce((acc, cur) => acc + cur, 0);
   }
 
   reroll(): void {
+    this._results = [];
+    this.roll();
+  }
+
+  private roll(): void {
     for (let i = 0; i < this._nDice; i++) {
-      this.results.push(this._roll());
+      let val: number;
+      do {
+        val = this._roll();
+        this._results.push(val);
+      } while (val === this._explodesOn);
     }
 
-    this.results.sort();
+    this._results.sort();
   }
 }
