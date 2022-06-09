@@ -1,7 +1,2 @@
-const world = 'world'
-
-function hello(word: string = world): string {
-  return `Hello ${word}!`
-}
-
-console.log(hello('world'))
+export { parse } from './parser'
+export { Summable } from './summable'
