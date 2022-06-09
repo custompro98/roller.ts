@@ -1,6 +1,6 @@
-import { Summable } from '../summable'
-import { RollFunction } from './types'
-import { roller } from './roller'
+import { Summable } from "../summable";
+import { RollFunction } from "./types";
+import { roller } from "./roller";
 
 const dice = {
   d2: roller(2),
@@ -11,57 +11,58 @@ const dice = {
   d12: roller(12),
   d20: roller(20),
   d100: roller(100),
-}
+};
 
-export const { d2, d4, d6, d8, d10, d12, d20, d100 } = dice
+export const { d2, d4, d6, d8, d10, d12, d20, d100 } = dice;
 
-export const isValidDieIndex = (s: string): boolean => (Object.keys(dice).includes(s))
+export const isValidDieIndex = (s: string): boolean =>
+  Object.keys(dice).includes(s);
 
 export default class Die implements Summable {
-  private DEFAULT_DROPPED = 0
+  private DEFAULT_DROPPED = 0;
 
-  private roll: RollFunction
-  private nDice: number
-  private dropHighest: number
-  private dropLowest: number
+  private _roll: RollFunction;
+  private _nDice: number;
+  private _dropHighest: number;
+  private _dropLowest: number;
 
-  private results: number[]
+  private results: number[];
 
   constructor(
     roller: RollFunction,
     nDice: number = 1,
-    { dh, dl }: { dh?: number, dl?: number } = { dh: 0, dl: 0 }
+    { dh, dl }: { dh?: number; dl?: number } = { dh: 0, dl: 0 }
   ) {
-    this.roll = roller
-    this.nDice = nDice
-    this.dropHighest = dh || this.DEFAULT_DROPPED
-    this.dropLowest = dl || this.DEFAULT_DROPPED
+    this._roll = roller;
+    this._nDice = nDice;
+    this._dropHighest = dh || this.DEFAULT_DROPPED;
+    this._dropLowest = dl || this.DEFAULT_DROPPED;
 
-    this.results = []
-    this.reroll()
+    this.results = [];
+    this.reroll();
   }
 
   value(): number {
-    let list = this.results
-    let numDropped = 0
+    let list = this.results;
+    let numDropped = 0;
 
-    if (this.dropLowest > 0) {
-      list = list.reverse()
-      numDropped = this.dropLowest
-    } else if (this.dropHighest > 0) {
-      numDropped = this.dropHighest
+    if (this._dropLowest > 0) {
+      list = list.reverse();
+      numDropped = this._dropLowest;
+    } else if (this._dropHighest > 0) {
+      numDropped = this._dropHighest;
     }
 
     return list
-      .slice(0, this.nDice - numDropped)
-      .reduce((acc, cur) => (acc + cur), 0)
+      .slice(0, this._nDice - numDropped)
+      .reduce((acc, cur) => acc + cur, 0);
   }
 
   reroll(): void {
-    for (let i = 0; i < this.nDice; i++) {
-      this.results.push(this.roll())
+    for (let i = 0; i < this._nDice; i++) {
+      this.results.push(this._roll());
     }
 
-    this.results.sort()
+    this.results.sort();
   }
 }
