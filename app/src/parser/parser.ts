@@ -4,14 +4,19 @@ import { Summable } from "../summable";
 import Die, * as dice from "../dice";
 import { AceOperator, Dice } from "../dice";
 
-/*
- * This will match the pattern START, 0 or more numbers, the letter d, and 0 or more numbers, END
- * i.e. example matches include
- * d6 2d6 d4 10d4 1000d20 1d12
- * */
+// Matches a digit - i.e. the `n` in nd6
+const COUNT_REGEX_STR = "(\\d*)";
+// Matches a die face descriptor - d2, ..., d20, d100
+const FACE_REGEX_STR = "(d\\d+)";
+// Matches an ace descriptor - !, !>5, !<4, etc.
+const ACE_REGEX_STR = "(!(<|>)?(\\d*))";
+// Matches a drop highest/lowest descriptor - dh1, dl2, etc.
+const DROP_REGEX_STR = "(d(h|l)\\d+)";
+
 const DICE_SHORTHAND_REGEX = new RegExp(
-  "^(\\d*)(d\\d+)(![<|>]?\\d*)?(d(h|l)\\d+)?$"
+  `^${COUNT_REGEX_STR}${FACE_REGEX_STR}${ACE_REGEX_STR}?${DROP_REGEX_STR}?$`
 );
+const ACE_REGEX = new RegExp(ACE_REGEX_STR);
 
 const parse = (input: string): Summable[] => {
   return input
@@ -43,7 +48,8 @@ const parseSummable = (s: string): Summable => {
 };
 
 const splitDiceNotation = (s: string): DiceNotation => {
-  const [input, nDice, dieFaces, ace, toDrop] = DICE_SHORTHAND_REGEX.exec(
+  // commas skip the ace-specific captures (maybe these can be rolled out)
+  const [input, nDice, dieFaces, ace, , , toDrop] = DICE_SHORTHAND_REGEX.exec(
     s
   ) as string[];
 
@@ -72,19 +78,33 @@ const parseAce = (s: string, dieFaces: string): dice.AceConfig => {
   const acesOn = { target: 0, operator: AceOperator.eq };
 
   if (s) {
-    if (s.length === 1) {
+    // commas skip the outer captures
+    const [, , operator, target] = ACE_REGEX.exec(s) as string[];
+
+    if (!operator && !target) {
+      acesOn.target = toNumber(dieFaces.slice(1, dieFaces.length));
+    } else if (!operator && target) {
+      acesOn.target = toNumber(target);
+    } else {
+      acesOn.target = toNumber(target);
+      acesOn.operator = dice.AceMap[operator];
+    }
+
+    /* const length = s.length;
+
+    if (length === 1) {
       acesOn.target = toNumber(dieFaces.slice(1, dieFaces.length));
     } else {
       if (s.includes(">")) {
-        acesOn.target = toNumber(s.slice(s.indexOf(">") + 1, s.length));
+        acesOn.target = toNumber(s.slice(s.indexOf(">") + 1, length));
         acesOn.operator = AceOperator.ge;
       } else if (s.includes("<")) {
-        acesOn.target = toNumber(s.slice(s.indexOf("<") + 1, s.length));
+        acesOn.target = toNumber(s.slice(s.indexOf("<") + 1, length));
         acesOn.operator = AceOperator.le;
       } else {
-        acesOn.target = toNumber(s.slice(1, s.length));
+        acesOn.target = toNumber(s.slice(1, length));
       }
-    }
+    } */
   }
 
   return acesOn;
