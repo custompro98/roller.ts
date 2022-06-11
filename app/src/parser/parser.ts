@@ -2,14 +2,16 @@ import { DiceNotation } from "./types";
 import { Modifier, StraightValue } from "../modifiers";
 import { Summable } from "../summable";
 import Die, * as dice from "../dice";
-import { AceOperator } from "../dice/types";
+import { AceOperator, Dice } from "../dice";
 
 /*
  * This will match the pattern START, 0 or more numbers, the letter d, and 0 or more numbers, END
  * i.e. example matches include
  * d6 2d6 d4 10d4 1000d20 1d12
  * */
-const DICE_SHORTHAND_REGEX = new RegExp("^(\\d*)(d\\d+)(!)?(d(h|l)\\d+)?$");
+const DICE_SHORTHAND_REGEX = new RegExp(
+  "^(\\d*)(d\\d+)(![<|>]?\\d*)?(d(h|l)\\d+)?$"
+);
 
 const parse = (input: string): Summable[] => {
   return input
@@ -54,13 +56,11 @@ const splitDiceNotation = (s: string): DiceNotation => {
     dropLowest = toNumber(toDrop.slice(2, toDrop.length));
   }
 
-  const explodesOn = ace ? toNumber(dieFaces.slice(1, dieFaces.length)) : 0;
-
   const spn = {
     input,
     nDice: toNumber(nDice) || 1,
     dieFaces: dieFaces,
-    ace: explodesOn,
+    ace: parseAce(ace, dieFaces),
     dropHighest,
     dropLowest,
   } as DiceNotation;
@@ -68,16 +68,38 @@ const splitDiceNotation = (s: string): DiceNotation => {
   return spn;
 };
 
+const parseAce = (s: string, dieFaces: string): dice.AceConfig => {
+  const acesOn = { target: 0, operator: AceOperator.eq };
+
+  if (s) {
+    if (s.length === 1) {
+      acesOn.target = toNumber(dieFaces.slice(1, dieFaces.length));
+    } else {
+      if (s.includes(">")) {
+        acesOn.target = toNumber(s.slice(s.indexOf(">") + 1, s.length));
+        acesOn.operator = AceOperator.ge;
+      } else if (s.includes("<")) {
+        acesOn.target = toNumber(s.slice(s.indexOf("<") + 1, s.length));
+        acesOn.operator = AceOperator.le;
+      } else {
+        acesOn.target = toNumber(s.slice(1, s.length));
+      }
+    }
+  }
+
+  return acesOn;
+};
+
 const isValidDie = (dn: DiceNotation): boolean => {
   return dice.isValidDieIndex(dn.dieFaces);
 };
 
 const parseDice = (dn: DiceNotation): Die => {
-  const idx: dice.Dice = dn.dieFaces as dice.Dice;
+  const idx: Dice = dn.dieFaces as Dice;
   const roller: dice.RollFunction = dice[idx];
 
   return new Die(roller, dn.nDice, {
-    ace: { target: dn.ace, operator: AceOperator.eq },
+    ace: dn.ace,
     dh: dn.dropHighest,
     dl: dn.dropLowest,
   });

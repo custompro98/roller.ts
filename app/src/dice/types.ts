@@ -27,3 +27,9 @@ export enum AceOperator {
   ge = ">",
   le = "<",
 }
+
+export const AceMap: { [key: string]: AceOperator } = {
+  "=": AceOperator.eq,
+  ">": AceOperator.ge,
+  "<": AceOperator.le,
+};

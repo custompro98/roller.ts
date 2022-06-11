@@ -182,5 +182,43 @@ describe("Die", () => {
 
       expect(subject.value()).toEqual(maxRoll + fudgedRoll);
     });
+
+    it("handles compounding dice if ace greater than is passed", () => {
+      const maxRoll = 4;
+      const fudgedRoll = 1;
+      const mockDiceFunction = jest
+        .fn()
+        .mockReturnValueOnce(maxRoll)
+        .mockReturnValueOnce(fudgedRoll);
+      const numDice = 1;
+
+      const subject = new Die(mockDiceFunction, numDice, {
+        ace: {
+          target: maxRoll - 1,
+          operator: AceOperator.ge,
+        },
+      });
+
+      expect(subject.value()).toEqual(maxRoll + fudgedRoll);
+    });
+
+    it("handles compounding dice if ace less than is passed", () => {
+      const minRoll = 1;
+      const fudgedRoll = 3;
+      const mockDiceFunction = jest
+        .fn()
+        .mockReturnValueOnce(minRoll)
+        .mockReturnValueOnce(fudgedRoll);
+      const numDice = 1;
+
+      const subject = new Die(mockDiceFunction, numDice, {
+        ace: {
+          target: minRoll + 1,
+          operator: AceOperator.le,
+        },
+      });
+
+      expect(subject.value()).toEqual(minRoll + fudgedRoll);
+    });
   });
 });
