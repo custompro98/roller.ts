@@ -1,4 +1,4 @@
 import StraightValue from './straight-value.ts'
 
-export { Modifier } from './types.ts'
+export type { Modifier } from './types.ts'
 export { StraightValue }
