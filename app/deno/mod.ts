@@ -8,5 +8,5 @@ export type { Modifier } from './_src/modifiers/index.ts'
 export { StraightValue } from './_src/modifiers/index.ts'
 
 export { Die }
-export { d2, d4, d6, d8, d10, d12, d20 } from './_src/dice/index.ts'
+export { d2, d4, d6, d8, d10, d12, d20, d100 } from './_src/dice/index.ts'
 export type { AceConfig, DieConfig, RollFunction } from './_src/dice/index.ts'
