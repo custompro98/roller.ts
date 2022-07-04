@@ -1,1 +1,0 @@
-{"version":3,"file":"straight-value.d.ts","sourceRoot":"","sources":["../../src/modifiers/straight-value.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAA;AAEvC,MAAM,CAAC,OAAO,OAAO,aAAc,YAAW,QAAQ;IACpD,OAAO,CAAC,GAAG,CAAQ;gBAEP,GAAG,EAAE,MAAM;IAIvB,KAAK,IAAI,MAAM;CAGhB"}
