@@ -1,4 +1,4 @@
-import { Modifier } from './types.ts'
+import type { Modifier } from './types.ts'
 
 export default class StraightValue implements Modifier {
   private mod: number

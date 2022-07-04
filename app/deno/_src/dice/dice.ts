@@ -1,5 +1,7 @@
-import { Summable } from "../summable/index.ts";
-import { AceConfig, AceOperator, DieConfig, RollFunction } from "./types.ts";
+import type { Summable } from "../summable/index.ts";
+
+import type { AceConfig, DieConfig, RollFunction } from "./types.ts";
+import { AceOperator } from "./types.ts"
 import { roller } from "./roller.ts";
 
 const dice = {
