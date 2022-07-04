@@ -1,5 +1,6 @@
-import { DiceNotation } from "./types.ts";
-import { Modifier, StraightValue } from "../modifiers/index.ts";
+import type { DiceNotation } from "./types.ts";
+import type { Modifier } from "../modifiers/index.ts";
+import { StraightValue } from "../modifiers/index.ts"
 import type { Summable } from "../summable/index.ts";
 import Die, * as dice from "../dice/index.ts";
 import { AceOperator, Dice } from "../dice/index.ts";
