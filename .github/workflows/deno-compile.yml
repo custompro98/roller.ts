@@ -1,0 +1,29 @@
+name: Compile for Deno
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      -main
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout roller.ts
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.23.x
+      - name: Install deps
+        run: cd app && npm install
+      - name: Compile for Deno
+        run: cd app && deno task compile
+      - name: Push
+        run: app/tools/push.sh
+        shell: bash
