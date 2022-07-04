@@ -1,5 +1,7 @@
-import { Summable } from "../summable";
-import { AceConfig, AceOperator, DieConfig, RollFunction } from "./types";
+import type { Summable } from "../summable";
+
+import type { AceConfig, DieConfig, RollFunction } from "./types";
+import { AceOperator } from "./types"
 import { roller } from "./roller";
 
 const dice = {

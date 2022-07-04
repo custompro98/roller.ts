@@ -1,6 +1,6 @@
 import { DiceNotation } from "./types";
 import { Modifier, StraightValue } from "../modifiers";
-import { Summable } from "../summable";
+import type { Summable } from "../summable";
 import Die, * as dice from "../dice";
 import { AceOperator, Dice } from "../dice";
 
