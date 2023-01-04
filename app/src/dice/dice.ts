@@ -6,16 +6,21 @@ import { roller } from "./roller";
 
 const dice = {
   d2: roller(2),
+  d3: roller(3),
   d4: roller(4),
+  d5: roller(5),
   d6: roller(6),
   d8: roller(8),
   d10: roller(10),
   d12: roller(12),
+  d16: roller(16),
   d20: roller(20),
+  d24: roller(24),
+  d30: roller(30),
   d100: roller(100),
 };
 
-export const { d2, d4, d6, d8, d10, d12, d20, d100 } = dice;
+export const { d2, d3, d4, d5, d6, d8, d10, d12, d16, d20, d24, d30, d100 } = dice;
 
 export const isValidDieIndex = (s: string): boolean =>
   Object.keys(dice).includes(s);
