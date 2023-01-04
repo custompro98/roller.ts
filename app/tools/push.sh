@@ -2,7 +2,7 @@
 
 git config user.name custompro98-ci
 git config user.email mitchjoa@gmail.com
-git add ./deno -f
+git add app/deno -f
 
 if ! git diff --cached --exit-code > /dev/null;
 then
